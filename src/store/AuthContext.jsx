@@ -9,13 +9,29 @@ export const AuthProvider = ({ children }) => {
 
   // โหลด user จาก token ตอนเปิดแอป
   useEffect(() => {
-    const token = localStorage.getItem('accessToken')
-    if (!token) { setLoading(false); return }
-    authApi.me()
-      .then(({ data }) => setUser(data.user))
-      .catch(() => localStorage.clear())
-      .finally(() => setLoading(false))
-  }, [])
+  const token = localStorage.getItem('accessToken')
+  if (!token) { setLoading(false); return }
+  authApi.me()
+    .then(({ data }) => setUser(data.user))
+    .catch(async (err) => {
+      // ลอง refresh ก่อน ถ้าไม่ได้จริงๆ ค่อย clear
+      if (err.response?.status === 401) {
+        try {
+          const refreshToken = localStorage.getItem('refreshToken')
+          if (!refreshToken) { localStorage.clear(); return }
+          const api = (await import('../services/api')).default
+          const { data } = await api.post('/auth/refresh', { refreshToken })
+          localStorage.setItem('accessToken', data.accessToken)
+          localStorage.setItem('refreshToken', data.refreshToken)
+          const { data: meData } = await authApi.me()
+          setUser(meData.user)
+        } catch {
+          localStorage.clear()
+        }
+      }
+    })
+    .finally(() => setLoading(false))
+}, [])
 
   // รับ token จาก OAuth callback (?access=...&refresh=...)
   useEffect(() => {
