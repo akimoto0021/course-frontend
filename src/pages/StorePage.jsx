@@ -89,7 +89,7 @@ function CourseCard({ course, thumb, onBuy }) {
         <div style={{ fontSize:11,color:'var(--gold)',fontWeight:700,textTransform:'uppercase',letterSpacing:.5,marginBottom:4 }}>การตลาด</div>
         <div style={{ fontSize:14,fontWeight:600,marginBottom:6,lineHeight:1.4,minHeight:40 }}>{course.title}</div>
         <div style={{ fontSize:12,color:'var(--text2)',marginBottom:10 }}>
-          {course.lesson_count || 0} บทเรียน · {course.student_count || 0} ผู้เรียน
+          {course.lesson_count || 0} บทเรียน{course.student_count > 10 ? ` · ${course.student_count} ผู้เรียน` : ''}
         </div>
         <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10 }}>
           <span style={{ fontSize:18,fontWeight:700,color:'var(--brand)' }}>฿{Number(course.price).toLocaleString()}</span>
