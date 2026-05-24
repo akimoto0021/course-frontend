@@ -27,14 +27,27 @@ export default function PaymentPage() {
       .then(({ data }) => setOrder(data.order))
       .catch(async err => {
   if (err.response?.status === 409) {
-    // ตรวจว่า enroll แล้วจริงไหม
     try {
       await coursesApi.myProgress(courseId)
       // enroll แล้ว → ไปดูคอร์ส
       navigate(`/player/${courseId}`, { replace: true })
     } catch {
-      // ยังไม่ได้ enroll → อยู่หน้านี้ รอ Admin อนุมัติ
-      setStatus('pending_review')
+      // ยังไม่ได้ enroll → ดึง order เดิมมาแสดง
+      try {
+        const { data } = await ordersApi.myOrders()
+        const existing = data.orders.find(o => o.course_id === courseId)
+        if (existing && existing.status === 'rejected') {
+          // order ถูกปฏิเสธ → ให้ส่งสลิปใหม่ได้
+          setOrder(existing)
+          setStatus('idle')
+        } else if (existing) {
+          // รอ Admin อนุมัติอยู่
+          setOrder(existing)
+          setStatus('pending_review')
+        }
+      } catch {
+        setStatus('pending_review')
+      }
     }
   }
 })
