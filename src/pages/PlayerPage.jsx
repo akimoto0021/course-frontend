@@ -87,10 +87,12 @@ export default function PlayerPage() {
         <div style={{ background:'#0a0f1e',aspectRatio:'16/9',position:'relative',overflow:'hidden' }}>
           {streamUrl ? (
             <video ref={videoRef} style={{ width:'100%',height:'100%',objectFit:'contain' }}
-              controlsList="nodownload nofullscreen noremoteplayback"
-              onContextMenu={e => e.preventDefault()}
-              controls
-            />
+  controlsList="nodownload nofullscreen noremoteplayback"
+  onContextMenu={e => e.preventDefault()}
+  controls
+  autoPlay
+  muted
+/>
           ) : (
             <div style={{ display:'flex',alignItems:'center',justifyContent:'center',height:'100%',color:'rgba(255,255,255,.4)',fontSize:14 }}>
               เลือกบทเรียนเพื่อเริ่มดู
