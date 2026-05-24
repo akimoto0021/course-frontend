@@ -18,7 +18,12 @@ export default function PlayerPage() {
     coursesApi.get(courseId).then(({ data }) => {
       setCourse(data.course)
       const first = data.course.lessons?.[0]
-      if (first) { setActive(first); if (first.video_key) loadStream(first.id) }
+      if (data.course.teaser_url) {
+        loadTeaserStream(courseId)
+      } else if (first && first.video_key) {
+        setActive(first)
+        loadStream(first.id)
+      }
       setLoading(false)
     })
     // โหลดคอร์สอื่นๆ แนะนำ
@@ -30,6 +35,13 @@ export default function PlayerPage() {
   const loadStream = async (lessonId) => {
     try {
       const { data } = await videosApi.streamToken(lessonId)
+      setStream(data.streamUrl)
+    } catch { setStream(null) }
+  }
+
+    const loadTeaserStream = async (courseId) => {
+    try {
+      const { data } = await videosApi.streamToken(`teaser-${courseId}`)
       setStream(data.streamUrl)
     } catch { setStream(null) }
   }

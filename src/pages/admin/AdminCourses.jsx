@@ -12,6 +12,8 @@ export default function AdminCourses() {
   const [lessonForm, setLF]     = useState({ title:'', courseId:null })
   const [videoFile, setVF]      = useState(null)
   const [uploadPct, setUploadPct] = useState(null)
+    const [teaserFile, setTF] = useState(null)
+    const [teaserPct, setTeaserPct] = useState(null)
   const [msg, setMsg]           = useState('')
 
   const load = () => {
@@ -47,6 +49,13 @@ export default function AdminCourses() {
     setUploadPct(0)
     await videosApi.upload(lessonId, videoFile, setUploadPct)
     setUploadPct(null); setVF(null); setMsg('อัพโหลดวิดีโอสำเร็จ')
+  }
+
+     const uploadTeaser = async (courseId) => {
+    if (!teaserFile) return
+    setTeaserPct(0)
+    await videosApi.uploadTeaser(courseId, teaserFile, setTeaserPct)
+    setTeaserPct(null); setTF(null); setMsg('อัพโหลด Teaser สำเร็จ'); load()
   }
 
   return (
@@ -123,6 +132,14 @@ export default function AdminCourses() {
                     </button>
                   </div>
                 )}
+                {/* TEASER UPLOAD */}
+                <div style={{ display:'flex',gap:6,alignItems:'center',marginTop:6 }}>
+                  <span style={{ fontSize:12,color:'var(--text2)',minWidth:50 }}>Teaser:</span>
+                  <input type="file" accept="video/*" onChange={e => setTF(e.target.files[0])} style={{ fontSize:12,flex:1 }} />
+                  <button className="btn btn-sm btn-outline" onClick={() => uploadTeaser(c.id)} disabled={!teaserFile||teaserPct!==null}>
+                    {teaserPct !== null ? `${teaserPct}%` : '⬆ Teaser'}
+                  </button>
+                </div>
               </div>
             ))}
             {courses.length === 0 && <div style={{ padding:32,textAlign:'center',color:'var(--text3)' }}>ยังไม่มีคอร์ส</div>}
