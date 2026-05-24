@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Hls from 'hls.js'
 import { coursesApi, videosApi, ordersApi } from '../services/api'
+import api from '../services/api'
 import { useAuth } from '../store/AuthContext'
 
 export default function PlayerPage() {
@@ -41,7 +42,7 @@ export default function PlayerPage() {
 
     const loadTeaserStream = async (courseId) => {
     try {
-      const { data } = await videosApi.streamToken(`teaser-${courseId}`)
+      const { data } = await api.get(`/videos/teaser/${courseId}`)
       setStream(data.streamUrl)
     } catch { setStream(null) }
   }
