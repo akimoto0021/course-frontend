@@ -59,19 +59,19 @@ export default function LoginPage() {
         {!isAdmin && tab === 'login' && (
           <>
             <div style={{ display:'flex',flexDirection:'column',gap:10,marginBottom:16 }}>
-              <a href="/api/auth/google">
+              <a href={`${import.meta.env.VITE_API_URL}/auth/google`}>
                 <button className="btn btn-ghost btn-full" style={{ justifyContent:'center',gap:10 }}>
                   <img src="https://www.svgrepo.com/show/475656/google-color.svg" width={18} height={18} alt="" />
                   เข้าสู่ระบบด้วย Google
                 </button>
               </a>
-              <a href="/api/auth/facebook">
+              <a href={`${import.meta.env.VITE_API_URL}/auth/facebook`}>
                 <button className="btn btn-ghost btn-full" style={{ justifyContent:'center',gap:10 }}>
                   <span style={{ color:'#1877f2',fontSize:18,fontWeight:700 }}>f</span>
                   เข้าสู่ระบบด้วย Facebook
                 </button>
               </a>
-              <a href="/api/auth/line">
+              <a href={`${import.meta.env.VITE_API_URL}/auth/line`}>
                 <button className="btn btn-ghost btn-full" style={{ justifyContent:'center',gap:10 }}>
                   <span style={{ color:'#06c755',fontSize:16,fontWeight:700 }}>LINE</span>
                   เข้าสู่ระบบด้วย LINE
