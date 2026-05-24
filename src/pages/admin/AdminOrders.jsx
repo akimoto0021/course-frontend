@@ -31,7 +31,7 @@ export default function AdminOrders() {
       <h2 style={{ fontSize:20,fontWeight:700,marginBottom:20 }}>คำสั่งซื้อ</h2>
 
       <div style={{ display:'flex',gap:4,marginBottom:16 }}>
-        {[['pending','รอตรวจสลิป'],['verified','ผ่านแล้ว'],['rejected','ปฏิเสธ']].map(([k,l]) => (
+        {[['pending_review','รอตรวจสลิป'],['verified','ผ่านแล้ว'],['rejected','ปฏิเสธ']].map(([k,l]) => (
           <button key={k} onClick={() => setFilter(k)}
             style={{ padding:'6px 14px',borderRadius:20,border:'1px solid var(--border)',fontSize:12,cursor:'pointer',
               background: filter===k ? 'var(--brand)' : 'var(--surface)',
@@ -69,7 +69,7 @@ export default function AdminOrders() {
                   </td>
                   <td style={{ fontSize:12,color:'var(--text2)' }}>{new Date(o.created_at).toLocaleDateString('th-TH')}</td>
                   <td>
-                    {o.status === 'pending' ? (
+                    {['pending', 'pending_review'].includes(o.status) ? (
                       <div style={{ display:'flex',gap:4 }}>
                         <button className="btn btn-sm btn-primary" disabled={working===o.id} onClick={() => approve(o.id)}>
                           {working===o.id ? '...' : 'อนุมัติ'}
