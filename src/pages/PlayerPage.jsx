@@ -39,6 +39,13 @@ export default function PlayerPage() {
     if (!streamUrl || !videoRef.current) return
     const video = videoRef.current
 
+    // ถ้าเป็น MP4 ให้เล่นตรงๆ ไม่ต้องใช้ HLS
+    if (streamUrl.includes('.mp4') || streamUrl.includes('/raw/')) {
+      video.src = streamUrl
+      video.play().catch(() => {})
+      return
+    }
+
     if (Hls.isSupported()) {
       const hls = new Hls({ enableWorker: false })
       hls.loadSource(streamUrl)
