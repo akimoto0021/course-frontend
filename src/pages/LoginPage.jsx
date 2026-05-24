@@ -65,13 +65,13 @@ export default function LoginPage() {
                   เข้าสู่ระบบด้วย Google
                 </button>
               </a>
-              <a href={`${import.meta.env.VITE_API_URL}/auth/facebook`}>
+              <a href={`${import.meta.env.VITE_API_URL}/auth/facebook`} style={{ display:'none' }}>
                 <button className="btn btn-ghost btn-full" style={{ justifyContent:'center',gap:10 }}>
                   <span style={{ color:'#1877f2',fontSize:18,fontWeight:700 }}>f</span>
                   เข้าสู่ระบบด้วย Facebook
                 </button>
               </a>
-              <a href={`${import.meta.env.VITE_API_URL}/auth/line`}>
+              <a href={`${import.meta.env.VITE_API_URL}/auth/line`} style={{ display:'none' }}>
                 <button className="btn btn-ghost btn-full" style={{ justifyContent:'center',gap:10 }}>
                   <span style={{ color:'#06c755',fontSize:16,fontWeight:700 }}>LINE</span>
                   เข้าสู่ระบบด้วย LINE
