@@ -25,12 +25,19 @@ export default function PaymentPage() {
     if (!course) return
     ordersApi.create({ course_id: courseId, affiliate_code: ref })
       .then(({ data }) => setOrder(data.order))
-      .catch(err => {
-        if (err.response?.status === 409) {
-          // ซื้อแล้ว → ไปดูคอร์สเลย
-          navigate(`/player/${courseId}`, { replace: true })
-        }
-      })
+      .catch(async err => {
+  if (err.response?.status === 409) {
+    // ตรวจว่า enroll แล้วจริงไหม
+    try {
+      await coursesApi.myProgress(courseId)
+      // enroll แล้ว → ไปดูคอร์ส
+      navigate(`/player/${courseId}`, { replace: true })
+    } catch {
+      // ยังไม่ได้ enroll → อยู่หน้านี้ รอ Admin อนุมัติ
+      setStatus('pending_review')
+    }
+  }
+})
   }, [course])
 
   const handleFileChange = (e) => {
