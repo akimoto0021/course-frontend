@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Hls from 'hls.js'
-import { coursesApi, videosApi, ordersApi } from '../services/api'
+import { coursesApi, videosApi } from '../services/api'
 import api from '../services/api'
 import { useAuth } from '../store/AuthContext'
 
@@ -16,18 +16,31 @@ export default function PlayerPage() {
   const [loading,   setLoading]   = useState(true)
 
   useEffect(() => {
-    coursesApi.get(courseId).then(({ data }) => {
-      setCourse(data.course)
-      const first = data.course.lessons?.[0]
-      if (data.course.teaser_url) {
-        loadTeaserStream(courseId)
-      } else if (first && first.video_key) {
-        setActive(first)
-        loadStream(first.id)
+    const init = async () => {
+      try {
+        // ✅ ตรวจสอบว่าซื้อคอร์สแล้วหรือยัง
+        await coursesApi.myProgress(courseId)
+
+        // ผ่านแล้ว → โหลดข้อมูลคอร์ส
+        const { data } = await coursesApi.get(courseId)
+        setCourse(data.course)
+        const first = data.course.lessons?.[0]
+        if (data.course.teaser_url) {
+          loadTeaserStream(courseId)
+        } else if (first && first.video_key) {
+          setActive(first)
+          loadStream(first.id)
+        }
+      } catch {
+        // ❌ ไม่ได้ซื้อ → ไปหน้าชำระเงิน
+        window.location.href = `/payment/${courseId}`
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
-    })
-    // โหลดคอร์สอื่นๆ แนะนำ
+    }
+
+    init()
+
     coursesApi.list().then(({ data }) => {
       setOthers((data.courses || []).filter(c => c.id !== courseId).slice(0, 4))
     })
@@ -40,19 +53,17 @@ export default function PlayerPage() {
     } catch { setStream(null) }
   }
 
-    const loadTeaserStream = async (courseId) => {
+  const loadTeaserStream = async (courseId) => {
     try {
       const { data } = await api.get(`/videos/teaser/${courseId}`)
       setStream(data.streamUrl)
     } catch { setStream(null) }
   }
 
-  // เมื่อ streamUrl เปลี่ยน → โหลด HLS
   useEffect(() => {
     if (!streamUrl || !videoRef.current) return
     const video = videoRef.current
 
-    // ถ้าเป็น MP4 ให้เล่นตรงๆ ไม่ต้องใช้ HLS
     if (streamUrl.includes('.mp4') || streamUrl.includes('/raw/')) {
       video.src = streamUrl
       video.play().catch(() => {})
@@ -87,12 +98,12 @@ export default function PlayerPage() {
         <div style={{ background:'#0a0f1e',aspectRatio:'16/9',position:'relative',overflow:'hidden' }}>
           {streamUrl ? (
             <video ref={videoRef} style={{ width:'100%',height:'100%',objectFit:'contain' }}
-  controlsList="nodownload nofullscreen noremoteplayback"
-  onContextMenu={e => e.preventDefault()}
-  controls
-  autoPlay
-  muted
-/>
+              controlsList="nodownload nofullscreen noremoteplayback"
+              onContextMenu={e => e.preventDefault()}
+              controls
+              autoPlay
+              muted
+            />
           ) : (
             <div style={{ display:'flex',alignItems:'center',justifyContent:'center',height:'100%',color:'rgba(255,255,255,.4)',fontSize:14 }}>
               เลือกบทเรียนเพื่อเริ่มดู
@@ -123,7 +134,7 @@ export default function PlayerPage() {
         </div>
       </div>
 
-      {/* SIDEBAR — แนะนำคอร์สอื่น */}
+      {/* SIDEBAR */}
       <div style={{ padding:16,overflowY:'auto',maxHeight:'calc(100vh - 60px)',position:'sticky',top:60 }}>
         <h3 style={{ fontSize:13,fontWeight:600,color:'var(--text2)',textTransform:'uppercase',letterSpacing:.5,marginBottom:12 }}>
           คอร์สที่น่าสนใจ
