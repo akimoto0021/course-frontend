@@ -31,10 +31,13 @@ export default function PlayerPage() {
           setActive(first)
           loadStream(first.id)
         }
-      } catch {
-        // ❌ ไม่ได้ซื้อ → ไปหน้าชำระเงิน
-        window.location.href = `/payment/${courseId}`
-      } finally {
+      } catch (err) {
+  if (err.response?.status === 401) {
+    window.location.href = `/login?next=/player/${courseId}`
+  } else {
+    window.location.href = `/payment/${courseId}`
+  }
+} finally {
         setLoading(false)
       }
     }
