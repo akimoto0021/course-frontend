@@ -75,6 +75,15 @@ export const videosApi = {
       onUploadProgress: (e) => onProgress?.(Math.round((e.loaded * 100) / e.total)),
     })
   },
+   uploadTeaser: (courseId, file, onProgress) => {
+    const form = new FormData()
+    form.append('video', file)
+    form.append('course_id', courseId)
+    return api.post('/videos/upload-teaser', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (e) => onProgress?.(Math.round((e.loaded * 100) / e.total)),
+    })
+  },
 }
 
 // ===== ADMIN =====
