@@ -53,6 +53,26 @@ export default function PaymentPage() {
 })
   }, [course])
 
+// SSE — รับแจ้งเตือนจาก Admin อนุมัติ
+useEffect(() => {
+  if (!order) return
+
+  const apiUrl = import.meta.env.VITE_API_URL
+  const token = localStorage.getItem('accessToken')
+  const es = new EventSource(`${apiUrl}/orders/${order.id}/status-stream?token=${token}`)
+
+  es.addEventListener('status', (e) => {
+    const { status: newStatus } = JSON.parse(e.data)
+    if (newStatus === 'verified') {
+      setStatus('success')
+      es.close()
+      setTimeout(() => navigate(`/player/${courseId}`), 2500)
+    }
+  })
+
+  return () => es.close()
+}, [order])
+
   const handleFileChange = (e) => {
     const file = e.target.files[0]
     if (!file) return
