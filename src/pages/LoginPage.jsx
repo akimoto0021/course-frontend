@@ -46,7 +46,7 @@ export default function LoginPage() {
 
         {/* LOGO */}
         <div style={{ textAlign:'center',marginBottom:24 }}>
-          <img src="/logo.png" alt="PakSup" style={{ width:52,height:52,borderRadius:12,marginBottom:12,objectFit:'contain' }} />
+          <img src="/logo-black.png" alt="PakSup" style={{ width:52,height:52,borderRadius:12,marginBottom:12,objectFit:'contain' }} />
           <h1 style={{ fontSize:22,fontWeight:700,marginBottom:4 }}>
             {isAdmin ? '🔒 Admin Login' : tab === 'register' ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
           </h1>
