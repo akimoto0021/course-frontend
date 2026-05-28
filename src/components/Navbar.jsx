@@ -18,8 +18,9 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-logo">
-  <img src="/logo-white.png" alt="PakSup" style={{ height:36, width:'auto' }} />
+      <Link to="/" className="navbar-logo" style={{ display:'flex',alignItems:'center',gap:8 }}>
+  <img src="/logo-white.png" alt="Paksup" style={{ height:32, width:'auto' }} />
+  <span>Paksup</span>
 </Link>
 
       <div className="navbar-links">
