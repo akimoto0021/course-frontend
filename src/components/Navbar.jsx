@@ -19,7 +19,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-logo">
-  <img src="/logo.png" alt="PakSup" style={{ height:36, width:'auto' }} />
+  <img src="/logo-white.png" alt="PakSup" style={{ height:36, width:'auto' }} />
 </Link>
 
       <div className="navbar-links">
