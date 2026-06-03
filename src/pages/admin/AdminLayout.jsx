@@ -2,10 +2,10 @@ import React from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 
 const menuItems = [
-  { to: '/admin',         label: '📊 ยอดขาย',     end: true },
-  { to: '/admin/orders',  label: '🧾 คำสั่งซื้อ' },
-  { to: '/admin/courses', label: '📚 จัดการคอร์ส' },
-  { to: '/admin/users',   label: '👥 จัดการสมาชิก' },
+  { to: '/admin',               label: '📊 ยอดขาย',       end: true },
+  { to: '/admin/orders',        label: '🧾 คำสั่งซื้อ' },
+  { to: '/admin/courses',       label: '📚 จัดการคอร์ส' },
+  { to: '/admin/users',         label: '👥 จัดการสมาชิก' },
   { to: '/admin/bundle-orders', label: '📦 Bundle Orders' },
 ]
 
