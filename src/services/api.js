@@ -94,6 +94,9 @@ export const adminApi = {
   approveOrder:   (id) => api.patch(`/admin/orders/${id}/approve`),
   rejectOrder:    (id, reason) => api.patch(`/admin/orders/${id}/reject`, { reason }),
   sales:          (period) => api.get('/admin/sales', { params: { period } }),
+  bundleOrders: (params) => api.get('/bundle/orders', { params }),
+    approveBundleOrder: (id, body) => api.patch(`/bundle/orders/${id}/approve`, body),
+    rejectBundleOrder: (id, reason) => api.patch(`/bundle/orders/${id}/reject`, { reason }),
 }
 
 // ===== AFFILIATE =====

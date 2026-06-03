@@ -14,6 +14,7 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminCourses from './pages/admin/AdminCourses'
 import AdminOrders  from './pages/admin/AdminOrders'
 import AdminUsers   from './pages/admin/AdminUsers'
+import AdminBundleOrders  from './pages/admin/AdminBundleOrders'
 import AffiliatePage from './pages/AffiliatePage'
 
 // Route guard
@@ -45,6 +46,7 @@ const AppRoutes = () => {
           <Route path="courses"  element={<AdminCourses />} />
           <Route path="orders"   element={<AdminOrders />} />
           <Route path="users"    element={<AdminUsers />} />
+	  <Route path="bundle-orders"  element={<AdminBundleOrders />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

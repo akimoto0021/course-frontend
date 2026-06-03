@@ -6,6 +6,7 @@ const menuItems = [
   { to: '/admin/orders',  label: '🧾 คำสั่งซื้อ' },
   { to: '/admin/courses', label: '📚 จัดการคอร์ส' },
   { to: '/admin/users',   label: '👥 จัดการสมาชิก' },
+  { to: '/admin/bundle-orders', label: '📦 Bundle Orders' },
 ]
 
 export default function AdminLayout() {
