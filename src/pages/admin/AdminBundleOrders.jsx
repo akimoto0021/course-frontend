@@ -3,55 +3,6 @@ import { adminApi } from '../../services/api'
 
 const API = import.meta.env.VITE_API_URL
 
-// ─── Approve Modal ───────────────────────────────────────────────
-function ApproveModal({ order, onClose, onDone }) {
-  const [downloadUrl, setDownloadUrl] = useState('')
-  const [videoUrl,    setVideoUrl]    = useState('')
-  const [loading,     setLoading]     = useState(false)
-  const [error,       setError]       = useState('')
-
-  const handleApprove = async () => {
-    if (!downloadUrl.trim()) { setError('กรุณาระบุ Download URL'); return }
-    setLoading(true); setError('')
-    try {
-      await adminApi.approveBundleOrder(order.id, { download_url: downloadUrl, video_url: videoUrl })
-      onDone()
-    } catch (e) {
-      setError(e.response?.data?.error || 'เกิดข้อผิดพลาด')
-    } finally { setLoading(false) }
-  }
-
-  return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
-      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:16, padding:32, width:'100%', maxWidth:480, boxShadow:'0 24px 80px rgba(0,0,0,0.3)' }}>
-        <h3 style={{ fontSize:18, fontWeight:700, marginBottom:4 }}>อนุมัติ Bundle Order</h3>
-        <p style={{ fontSize:13, color:'var(--text3)', marginBottom:24 }}>
-          {order.name} — {BUNDLE_LABELS[order.bundle_type] || order.bundle_type} (฿{Number(order.amount).toLocaleString()})
-        </p>
-        {error && <div style={{ background:'#fff0f0', color:'#c00', padding:'10px 14px', borderRadius:8, marginBottom:16, fontSize:13 }}>{error}</div>}
-        <div style={{ marginBottom:16 }}>
-          <label style={{ display:'block', fontSize:12, fontWeight:600, color:'var(--text2)', marginBottom:6 }}>Download URL <span style={{ color:'#c00' }}>*</span></label>
-          <input value={downloadUrl} onChange={e => setDownloadUrl(e.target.value)} placeholder="https://drive.google.com/..."
-            style={{ width:'100%', padding:'10px 12px', borderRadius:8, border:'1px solid var(--border)', fontSize:13, background:'var(--bg)', color:'var(--text)', outline:'none', boxSizing:'border-box' }} />
-          <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>ลิงก์ดาวน์โหลดไฟล์ Prompt Bundle</div>
-        </div>
-        <div style={{ marginBottom:28 }}>
-          <label style={{ display:'block', fontSize:12, fontWeight:600, color:'var(--text2)', marginBottom:6 }}>Video URL <span style={{ color:'var(--text3)', fontWeight:400 }}>(ถ้ามี)</span></label>
-          <input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://..."
-            style={{ width:'100%', padding:'10px 12px', borderRadius:8, border:'1px solid var(--border)', fontSize:13, background:'var(--bg)', color:'var(--text)', outline:'none', boxSizing:'border-box' }} />
-          <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>ลิงก์วิดีโอสอนใช้งาน (optional)</div>
-        </div>
-        <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
-          <button onClick={onClose} disabled={loading} style={{ padding:'9px 20px', borderRadius:8, border:'1px solid var(--border)', background:'var(--surface)', color:'var(--text2)', fontSize:13, cursor:'pointer' }}>ยกเลิก</button>
-          <button onClick={handleApprove} disabled={loading} style={{ padding:'9px 20px', borderRadius:8, border:'none', background:'var(--brand)', color:'#fff', fontSize:13, fontWeight:600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? .7 : 1 }}>
-            {loading ? 'กำลังอนุมัติ...' : 'ยืนยันอนุมัติ ✓'}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ─── Slip Modal ───────────────────────────────────────────────────
 function SlipModal({ url, onClose }) {
   return (
@@ -124,13 +75,6 @@ function DetailModal({ order, onClose }) {
             </a>
           </div>
         )}
-        {(order.download_url || order.video_url) && (
-          <div>
-            <div style={{ fontSize:12, fontWeight:700, color:'var(--text2)', marginBottom:10, textTransform:'uppercase', letterSpacing:'0.05em' }}>ลิงก์ที่ส่งให้ลูกค้า</div>
-            {order.download_url && <div style={{ marginBottom:8 }}><div style={{ fontSize:11, color:'var(--text3)', marginBottom:3 }}>Download URL</div><a href={order.download_url} target="_blank" rel="noreferrer" style={{ fontSize:12, color:'var(--brand)', wordBreak:'break-all' }}>{order.download_url}</a></div>}
-            {order.video_url && <div><div style={{ fontSize:11, color:'var(--text3)', marginBottom:3 }}>Video URL</div><a href={order.video_url} target="_blank" rel="noreferrer" style={{ fontSize:12, color:'var(--brand)', wordBreak:'break-all' }}>{order.video_url}</a></div>}
-          </div>
-        )}
       </div>
     </div>
   )
@@ -154,13 +98,12 @@ const STATUS_TABS = [
 
 // ─── Main Page ────────────────────────────────────────────────────
 export default function AdminBundleOrders() {
-  const [orders,       setOrders]       = useState([])
-  const [loading,      setLoading]      = useState(true)
-  const [filter,       setFilter]       = useState('pending_review')
-  const [working,      setWorking]      = useState(null)
-  const [approveOrder, setApproveOrder] = useState(null)
-  const [slipUrl,      setSlipUrl]      = useState(null)
-  const [detailOrder,  setDetailOrder]  = useState(null)
+  const [orders,        setOrders]        = useState([])
+  const [loading,       setLoading]       = useState(true)
+  const [filter,        setFilter]        = useState('pending_review')
+  const [working,       setWorking]       = useState(null)
+  const [slipUrl,       setSlipUrl]       = useState(null)
+  const [detailOrder,   setDetailOrder]   = useState(null)
   const [newOrderAlert, setNewOrderAlert] = useState(false)
 
   const load = () => {
@@ -184,7 +127,17 @@ export default function AdminBundleOrders() {
     return () => es.close()
   }, [filter])
 
-  const handleApproveDone = () => { setApproveOrder(null); load() }
+  // อนุมัติ — กดปุ่มเดียวเลย ไม่ต้องกรอก URL
+  const handleApprove = async (order) => {
+    if (!window.confirm(`อนุมัติ ${order.name} — ${BUNDLE_LABELS[order.bundle_type]}?\nระบบจะส่ง download link ให้ลูกค้าอัตโนมัติ`)) return
+    setWorking(order.id)
+    try {
+      await adminApi.approveBundleOrder(order.id, {})
+      load()
+    } catch (e) {
+      alert(e.response?.data?.error || 'เกิดข้อผิดพลาด')
+    } finally { setWorking(null) }
+  }
 
   const handleReject = async (order) => {
     const reason = prompt('เหตุผลที่ปฏิเสธ:')
@@ -246,8 +199,14 @@ export default function AdminBundleOrders() {
                     <td>
                       {['pending', 'pending_review'].includes(o.status) ? (
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <button className="btn btn-sm btn-primary" disabled={working === o.id} onClick={() => setApproveOrder(o)}>อนุมัติ</button>
-                          <button className="btn btn-sm btn-ghost" disabled={working === o.id} onClick={() => handleReject(o)}>ปฏิเสธ</button>
+                          <button className="btn btn-sm btn-primary" disabled={working === o.id}
+                            onClick={() => handleApprove(o)}>
+                            {working === o.id ? '...' : 'อนุมัติ'}
+                          </button>
+                          <button className="btn btn-sm btn-ghost" disabled={working === o.id}
+                            onClick={() => handleReject(o)}>
+                            ปฏิเสธ
+                          </button>
                         </div>
                       ) : (
                         <span className={`badge badge-${o.status === 'verified' ? 'success' : o.status === 'rejected' ? 'danger' : 'warning'}`}>
@@ -263,9 +222,8 @@ export default function AdminBundleOrders() {
         }
       </div>
 
-      {approveOrder && <ApproveModal order={approveOrder} onClose={() => setApproveOrder(null)} onDone={handleApproveDone} />}
-      {slipUrl      && <SlipModal url={slipUrl} onClose={() => setSlipUrl(null)} />}
-      {detailOrder  && <DetailModal order={detailOrder} onClose={() => setDetailOrder(null)} />}
+      {slipUrl     && <SlipModal url={slipUrl} onClose={() => setSlipUrl(null)} />}
+      {detailOrder && <DetailModal order={detailOrder} onClose={() => setDetailOrder(null)} />}
     </div>
   )
 }
