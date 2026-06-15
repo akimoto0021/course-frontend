@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import { coursesApi, ordersApi } from '../services/api'
+import axios from 'axios'
 
 export default function PaymentPage() {
   const { courseId } = useParams()
@@ -15,10 +16,20 @@ export default function PaymentPage() {
   const [status,  setStatus]  = useState('idle') // idle | uploading | success | pending_review | error
   const [ocrResult, setOcrResult] = useState(null)
   const [error,   setError]   = useState('')
+  const [qrUrl,   setQrUrl]   = useState('')
 
   useEffect(() => {
     coursesApi.get(courseId).then(({ data }) => setCourse(data.course))
   }, [courseId])
+
+  // Generate QR PromptPay dynamic ตามราคาคอร์ส
+  useEffect(() => {
+    if (!course) return
+    const apiUrl = import.meta.env.VITE_API_URL
+    axios.get(`${apiUrl}/payment/qr`, { params: { amount: course.price } })
+      .then(({ data }) => setQrUrl(data.qrDataUrl))
+      .catch(() => setQrUrl(''))
+  }, [course])
 
   // สร้าง order ทันทีที่เข้าหน้า
   useEffect(() => {
@@ -124,11 +135,16 @@ useEffect(() => {
       <div className="card" style={{ padding:20,marginBottom:16 }}>
         <h3 style={{ fontSize:14,fontWeight:600,color:'var(--text2)',marginBottom:14 }}>ชำระผ่านโอนเงิน / PromptPay</h3>
         <div style={{ textAlign:'center',marginBottom:16 }}>
-          <img
-            src="/qr-payment.jpg"
-            alt="QR PromptPay SCB"
-            style={{ width:200,height:'auto',margin:'0 auto 10px',borderRadius:8,border:'2px solid #4e2a84',display:'block' }}
-          />
+          {qrUrl
+            ? <img
+                src={qrUrl}
+                alt="QR PromptPay"
+                style={{ width:200,height:200,margin:'0 auto 10px',borderRadius:8,border:'2px solid #4e2a84',display:'block' }}
+              />
+            : <div style={{ width:200,height:200,margin:'0 auto 10px',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text3)',fontSize:13,border:'2px dashed var(--border)',borderRadius:8 }}>
+                กำลังโหลด QR...
+              </div>
+          }
           <div style={{ fontSize:12,color:'var(--text2)' }}>สแกน QR PromptPay หรือโอนตามข้อมูลด้านล่าง</div>
         </div>
         <div style={{ background:'var(--bg)',borderRadius:'var(--radius)',padding:14 }}>
